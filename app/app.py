@@ -2,26 +2,19 @@ import streamlit as st
 import joblib
 import os
 
-# Load model and vectorizer
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-model = joblib.load(os.path.join(BASE_DIR, '..', 'models', 'fake_job_model.pkl'))
-vectorizer = joblib.load(os.path.join(BASE_DIR, '..', 'models', 'tfidf_vectorizer.pkl'))
+model_path = os.path.abspath(os.path.join(BASE_DIR, '..', 'models', 'fake_job_model.pkl'))
+vectorizer_path = os.path.abspath(os.path.join(BASE_DIR, '..', 'models', 'tfidf_vectorizer.pkl'))
 
-# App title
-st.title("Fake Job Posting Detection")
+st.write("Model path:", model_path)
+st.write("Vectorizer path:", vectorizer_path)
 
-# User input
-user_input = st.text_area("Enter the job description:")
+if not os.path.exists(model_path):
+    st.error(f"Model file not found at {model_path}")
+else:
+    model = joblib.load(model_path)
 
-if st.button("Check if it's fake"):
-    if user_input.strip() == "":
-        st.warning("Please enter some job description text.")
-    else:
-        # Preprocess and predict
-        input_vector = vectorizer.transform([user_input])
-        prediction = model.predict(input_vector)
-
-        if prediction[0] == 1:
-            st.error("⚠️ This job posting is likely **FAKE**.")
-        else:
-            st.success("✅ This job posting appears to be **Genuine**.")
+if not os.path.exists(vectorizer_path):
+    st.error(f"Vectorizer file not found at {vectorizer_path}")
+else:
+    vectorizer = joblib.load(vectorizer_path)
